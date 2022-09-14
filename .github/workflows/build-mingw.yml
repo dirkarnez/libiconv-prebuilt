@@ -25,6 +25,7 @@ jobs:
       - name: Install MSYS2
         uses: msys2/setup-msys2@v2
         with:
+          update: true
           msystem: MINGW64
           install: make autoconf automake libtool autogen perl
           
