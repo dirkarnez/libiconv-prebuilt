@@ -20,7 +20,7 @@ jobs:
       
       - name: git clone
         shell: cmd
-        run: git clone --recursive https://git.savannah.gnu.org/libiconv.git && cd libiconv && git checkout ${{ env.tagName }}
+        run: git clone --recursive https://git.savannah.gnu.org/git/libiconv.git && cd libiconv && git checkout ${{ env.tagName }}
       
       - name: Install MSYS2
         uses: msys2/setup-msys2@v2
