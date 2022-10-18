@@ -36,8 +36,13 @@ jobs:
       - name: set PATH, check mingw version, cmake generate, build and install
         shell: msys2 {0}
         run: |
-            export PATH="${{ github.workspace }}/mingw64:${{ github.workspace }}/mingw64/bin:${{ github.workspace }}/msys64/usr/bin:/usr/bin" &&
-            cd libiconv && g++ --version && ./gitsub.sh pull && ./autogen.sh && ./configure mingw64 -static --enable-relocatable --prefix="$(pwd)/${{ env.installationPath }}" &&
+            workspace=$(pwd) &&
+            export PATH="$workspace/mingw64:$workspace/mingw64/bin:$workspace/msys64/usr/bin:/usr/bin" &&
+            gcc --version &&
+            cd libiconv && 
+            ./autogen.sh &&
+            ./configure --help &&
+            ./configure mingw64 -static --enable-relocatable --prefix="$(pwd)/${{ env.installationPath }}" &&
             make && make install
             
       - name: Archive Release
