@@ -43,7 +43,7 @@ jobs:
         
       - shell: cmd
         run: |
-          .\PortableGit-2.38.1-64-bit\usr\bin\tar.exe -jxvf libiconv-1.17.tar.gz &&^
+          .\PortableGit-2.38.1-64-bit\usr\bin\tar.exe -zxvf libiconv-1.17.tar.gz &&^
           rename libiconv-1.17 libiconv
           
       - name: set PATH, check mingw version, cmake generate, build and install
