@@ -14,13 +14,17 @@ jobs:
       libraryName: libiconv
       installationPath: libiconv-installation
       tagName: v1.17 # target tag
-      mingwTargetZip: libiconv-${{ github.ref_name }}-x86_64-posix-seh-rev0-8.1.0.zip
+      mingwTargetZip: libiconv-${{ github.ref_name }}-x86_64-8.1.0-release-posix-seh-rt_v6-rev0.zip
     steps:
       - uses: actions/checkout@v3
+
+      - shell: cmd
+        run: |
+          curl https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.17.tar.gz -L -O 
       
-      - name: git clone
-        shell: cmd
-        run: git clone --recursive https://git.savannah.gnu.org/git/libiconv.git && cd libiconv && git checkout ${{ env.tagName }}
+      # - name: git clone
+      #   shell: cmd
+      #   run: git clone --recursive https://git.savannah.gnu.org/git/libiconv.git && cd libiconv && git checkout ${{ env.tagName }}
       
       - name: Install MSYS2
         uses: msys2/setup-msys2@v2
@@ -31,8 +35,17 @@ jobs:
           
       - name: curl x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z
         shell: cmd
-        run:  cd /d ${{ github.workspace }} && curl https://github.com/2641797006/c/blob/master/GCC-zip/x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z?raw=true -L --output x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z && dir && 7z.exe x x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z
+        run:  curl https://github.com/2641797006/c/blob/master/GCC-zip/x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z?raw=true -L --output x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z && dir && 7z.exe x x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z
+      
+      - name: curl PortableGit-2.38.1-64-bit.7z.exe
+        shell: cmd
+        run:  curl https://github.com/git-for-windows/git/releases/download/v2.38.1.windows.1/PortableGit-2.38.1-64-bit.7z.exe -L --output PortableGit-2.38.1-64-bit.7z.exe && dir && 7z.exe x PortableGit-2.38.1-64-bit.7z.exe -o"${{ github.workspace }}\PortableGit-2.38.1-64-bit"
         
+      - shell: cmd
+        run: |
+          .\PortableGit-2.38.1-64-bit\usr\bin\tar.exe -jxvf libiconv-1.17.tar.gz &&^
+          rename libiconv-1.17 libiconv
+          
       - name: set PATH, check mingw version, cmake generate, build and install
         shell: msys2 {0}
         run: |
@@ -40,22 +53,21 @@ jobs:
             export PATH="$workspace/mingw64:$workspace/mingw64/bin:$workspace/msys64/usr/bin:/usr/bin" &&
             gcc --version &&
             cd libiconv && 
-            ./gitsub.sh pull &&
             ./autogen.sh &&
-            ./configure --help
-            # ./configure mingw64 -static --enable-relocatable --prefix="$(pwd)/${{ env.installationPath }}" &&
-            # make VERBOSE=1 && make install
+            ./configure --help &&
+            ./configure mingw64 -static --enable-relocatable --prefix="$(pwd)/${{ env.installationPath }}" &&
+            make VERBOSE=1 && make install
             
       - name: Archive Release
         uses: thedoctor0/zip-release@master
         with:
           type: 'zip'
-          directory: "${{ github.workspace }}/libiconv/${{ env.installationPath }}"
+          directory: "libiconv/${{ env.installationPath }}"
           filename: "${{ env.mingwTargetZip }}"
         
       - name: Release prebuilt
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "${{ github.workspace }}/libiconv/${{ env.installationPath }}/${{ env.mingwTargetZip }}"
+          artifacts: "libiconv/${{ env.installationPath }}/${{ env.mingwTargetZip }}"
           allowUpdates: true
           token: ${{ secrets.GITHUB_TOKEN }}
