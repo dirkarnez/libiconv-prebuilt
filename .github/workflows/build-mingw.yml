@@ -54,7 +54,7 @@ jobs:
             gcc --version &&
             cd libiconv && 
             ./configure --help &&
-            ./configure mingw64 -static --enable-relocatable --prefix="$(pwd)/${{ env.installationPath }}" &&
+            ./configure mingw64 --enable-relocatable --enable-shared=yes --enable-static=yes --prefix="$(pwd)/${{ env.installationPath }}" &&
             make VERBOSE=1 && make install
             
       - name: Archive Release
