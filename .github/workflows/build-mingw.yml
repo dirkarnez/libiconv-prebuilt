@@ -53,7 +53,6 @@ jobs:
             export PATH="$workspace/mingw64:$workspace/mingw64/bin:$workspace/msys64/usr/bin:/usr/bin" &&
             gcc --version &&
             cd libiconv && 
-            ./autogen.sh &&
             ./configure --help &&
             ./configure mingw64 -static --enable-relocatable --prefix="$(pwd)/${{ env.installationPath }}" &&
             make VERBOSE=1 && make install
